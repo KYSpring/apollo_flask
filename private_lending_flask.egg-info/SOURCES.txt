@@ -1,0 +1,15 @@
+MANIFEST.in
+setup.py
+flaskr/__init__.py
+flaskr/dataAccess.py
+flaskr/dataQuery.py
+flaskr/law.py
+flaskr/submitComment.py
+private_lending_flask.egg-info/PKG-INFO
+private_lending_flask.egg-info/SOURCES.txt
+private_lending_flask.egg-info/dependency_links.txt
+private_lending_flask.egg-info/not-zip-safe
+private_lending_flask.egg-info/requires.txt
+private_lending_flask.egg-info/top_level.txt
+tests/__init__.py
+venv/__init__.py
