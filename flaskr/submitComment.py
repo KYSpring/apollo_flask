@@ -9,11 +9,9 @@ bp = Blueprint('submitComment', __name__, url_prefix='/privatelending')
 @bp.route('/submitComment', methods=(['POST']))
 def submit_comment():
     if request.method=='POST' and request.form['comment_data']:
-        print(request.form)
-        comment_data = request.form['comment_data']
-        # print('66666666',comment_data)
+        print(request.form['comment_data'], request.form['contact'], request.form['workplace'])
         try:
-            insert_comment(comment_data)
+            insert_comment(request.form['comment_data'], request.form['contact'], request.form['workplace'])
             res = {
                 'state': True,
                 'info': '提交数据库成功'

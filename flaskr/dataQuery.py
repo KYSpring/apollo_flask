@@ -154,7 +154,7 @@ def query_data():
         print(request.form)
         search_field_type = request.form['search_field_type']
         search_str = request.form['search_str']
-        print('1233344444'+search_field_type, search_str)
+        # print('1233344444'+search_field_type, search_str)
         myrules = PrivateLendingRules()
         res = myrules.get_closest_match(search_field_type, search_str)
     else:

@@ -22,9 +22,9 @@ def select_db(select_sql):
     db.close()
     return data
 
-def insert_comment(data):
-    insertSQL = "INSERT INTO `private-lending-data`.privacylendingcomment (content) VALUES('"+data+"');"
-    print(insertSQL)
+def insert_comment(comment_data,contact,workplace):
+    insertSQL = "INSERT INTO `private-lending-data`.privacylendingcomment (content,contact,workplace) VALUES("+comment_data+",'"+contact+"','"+workplace+"');"
+    # print(insertSQL)
     # 建立数据库连接
     db = pymysql.connect(
         host="127.0.0.1",
