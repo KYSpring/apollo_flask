@@ -23,7 +23,7 @@ def select_db(select_sql):
     return data
 
 def insert_comment(comment_data,contact,workplace):
-    insertSQL = "INSERT INTO `private-lending-data`.privacylendingcomment (content,contact,workplace) VALUES("+comment_data+",'"+contact+"','"+workplace+"');"
+    insertSQL = "INSERT INTO `private-lending-data`.privacylendingcomment (content,contact,workplace) VALUES('"+comment_data+"','"+contact+"','"+workplace+"');"
     # print(insertSQL)
     # 建立数据库连接
     db = pymysql.connect(

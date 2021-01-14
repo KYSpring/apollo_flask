@@ -111,22 +111,31 @@ class PrivateLendingRules():
     #     print(process.extractOne("公证借条", choices))
     #     pass
 
-    def get_closest_match(self, search_field_type, search_str):
+    def get_class_list(self):
+        class_list = sorted(list(set(self.csv_data["类别"].values.tolist())))
+        return class_list
+
+    def get_closest_match(self, search_field_type, search_str, search_class):
         """
         输入：  search_field_type       检索字段类型，
-               search_str              检索内容，返回前10最近似匹配结果，json格式。
+               search_str              检索内容，返回前closest_match_num个最近似匹配结果，json格式。
+               search_class            检索类别
 
         输出：  以json格式，返回前10最近似匹配结果。
         """
-        closest_match_num = 10
+        closest_match_num = 20
         match_rusult_dict = {}
         field_types = ["争议焦点", "裁判观点", "裁判依据", "说理", "判例"]
 
         if search_field_type not in field_types:
             print("error:检索字段选择错误！")
             return -1
-        select_csv_data = self.csv_data[["类别", search_field_type]]
-
+        if search_field_type == '争议焦点':
+            search_field_type = search_field_type+'（标题）'
+        if search_class == '':
+            select_csv_data = self.csv_data[["类别", search_field_type]]
+        else:
+            select_csv_data = self.csv_data[["类别", search_field_type]][self.csv_data["类别"] == search_class]
         for index, row in select_csv_data.iterrows():
             match_score = jellyfish.jaro_winkler_similarity(search_str, row[search_field_type])
             match_rusult_dict[index] = match_score
@@ -151,13 +160,21 @@ class PrivateLendingRules():
 @bp.route('/dataQuery',methods=(['POST','GET']))
 def query_data():
     if request.method == 'POST':
-        print(request.form)
+        # print(request.form)
         search_field_type = request.form['search_field_type']
         search_str = request.form['search_str']
-        # print('1233344444'+search_field_type, search_str)
+        search_class = request.form['search_class']
         myrules = PrivateLendingRules()
-        res = myrules.get_closest_match(search_field_type, search_str)
+        res = myrules.get_closest_match(search_field_type, search_str, search_class)
     else:
         res = '无法使用GET方法访问'
     return res
 
+@bp.route('/getClassList', methods=(['GET']))
+def get_class():
+    if request.method == 'GET':
+        myclass = PrivateLendingRules()
+        res = {'state':True,'info': myclass.get_class_list()}
+    else:
+        res = {'state':True, 'info':'无法使用POST方法访问'}
+    return res
