@@ -112,8 +112,24 @@ class PrivateLendingRules():
     #     pass
 
     def get_class_list(self):
+        '获取一级分类：裁判规则类型'
+        """
+        输出：一级类别list，争议焦点list[list] ;（同一索引序号的两个list为对应关系:即 （索引序号=类别序号=争议焦点集合序号））
+        """
         class_list = sorted(list(set(self.csv_data["类别"].values.tolist())))
-        return class_list
+        issue_list_sum = []
+        for item in class_list:
+            issue_list_sum.append(self.get_issue_list(item))
+        return class_list, issue_list_sum
+
+    def get_issue_list(self, class_type):
+        """
+             获取一级分类class_type下的争议焦点清单
+             输入 一级类别class_type
+             输出 该类别下的争议焦点清单：list
+        """
+        issue_list = sorted(list(set(self.csv_data[["类别", "争议焦点（标题）"]][self.csv_data["类别"] == class_type]["争议焦点（标题）"])))
+        return issue_list
 
     def get_closest_match(self, search_field_type, search_str, search_class):
         """
@@ -172,6 +188,9 @@ def query_data():
 
 @bp.route('/getClassList', methods=(['GET']))
 def get_class():
+    """
+    :return:    返回一级分类list和对应的争议焦点List
+    """
     if request.method == 'GET':
         myclass = PrivateLendingRules()
         res = {'state':True,'info': myclass.get_class_list()}
