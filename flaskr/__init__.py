@@ -27,6 +27,8 @@ def create_app(test_config=None):
     app.register_blueprint(dataQuery.bp)
     from . import submitComment
     app.register_blueprint(submitComment.bp)
+    from . import calculateRate
+    app.register_blueprint(calculateRate.bp)
 
     # a simple page that says hello
     @app.route('/hello')

@@ -6,9 +6,9 @@ def select_db(select_sql):
     db = pymysql.connect(
         host="127.0.0.1",
         port=3306,
-        user="root",
+        user="KYSpring",
         passwd="KYSpring",
-        db="private-lending-data"
+        db="privatelending"
     )
     # 通过 cursor() 创建游标对象，并让查询结果以字典格式输出
     cur = db.cursor(cursor=pymysql.cursors.DictCursor)
@@ -23,15 +23,15 @@ def select_db(select_sql):
     return data
 
 def insert_comment(comment_data,contact,workplace):
-    insertSQL = "INSERT INTO `private-lending-data`.privacylendingcomment (content,contact,workplace) VALUES('"+comment_data+"','"+contact+"','"+workplace+"');"
+    insertSQL = "INSERT INTO `privatelending`.privatelendingcomment (content,contact,workplace) VALUES('"+comment_data+"','"+contact+"','"+workplace+"');"
     # print(insertSQL)
     # 建立数据库连接
     db = pymysql.connect(
         host="127.0.0.1",
         port=3306,
-        user="root",
+        user="KYSpring",
         passwd="KYSpring",
-        db="private-lending-data"
+        db="privatelending"
     )
     try:
         # 通过 cursor() 创建游标对象，并让查询结果以字典格式输出
@@ -42,7 +42,7 @@ def insert_comment(comment_data,contact,workplace):
         db.commit()
         res = 'success'
     except Exception:
-        print('插入数据异常：'+Exception)
+        # print('插入数据异常：'+Exception)
         db.rollback()
         res = '插入数据异常：'+Exception
     finally:
@@ -52,5 +52,5 @@ def insert_comment(comment_data,contact,workplace):
         db.close()
     return res
 
-# select_sql = 'SELECT * FROM privacyLendingComment'
+# select_sql = 'SELECT * FROM privatelendingcomment'
 # print(insert_comment('222'))
