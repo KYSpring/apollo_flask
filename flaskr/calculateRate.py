@@ -248,42 +248,41 @@ def calculate_rate():
 
             # 判断有无逾期利率，若有按逾期利率算，若无则按期内利率算
             if data['LXAction']['LXLoan']['overdueRateRadio'] == 1 or data['LXAction']['LXLoan']['overdueRateRadio'] == '1':
-                finalOverdueTime = float((balanceTime - loanEndTime).days)
-                if finalOverdueTime > 0:
-                    # 至结算日新增期内利息
-                    finalRateTime = max(float((loanEndTime - lastRepayTime).days), 0)
-                    mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount, finalRateTime, rate, waitRateAmount)
-                    newRateAmount = loanAmount * finalRateTime * rate / 360
-                    activities.append({
-                        'content': "至结算日新增期内利息:%.2f=%s。" % (newRateAmount, mathRecord),
-                        'timestamp': data['LXAction']['LXLoan']['balanceTime'],
-                        'type': 'primary',
-                        'hollow': True,
-                    })
+                finalOverdueTime = max(float((balanceTime - loanEndTime).days),0)
+                # 至结算日新增期内利息
+                finalRateTime = max(float((loanEndTime - lastRepayTime).days), 0)
+                mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount, finalRateTime, rate, waitRateAmount)
+                newRateAmount = loanAmount * finalRateTime * rate / 360
+                activities.append({
+                    'content': "至结算日新增期内利息:%.2f=%s。" % (newRateAmount, mathRecord),
+                    'timestamp': data['LXAction']['LXLoan']['balanceTime'],
+                    'type': 'primary',
+                    'hollow': True,
+                })
 
-                    # 至结算日新增逾期利息
-                    mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount,finalOverdueTime,overdueRate,waitRateAmount)
-                    newOverduRateAmount = loanAmount*finalOverdueTime*overdueRate/360
-                    activities.append({
-                        'content': "至结算日新增逾期利息:%.2f=%s。" % (newOverduRateAmount, mathRecord),
-                        'timestamp': data['LXAction']['LXLoan']['balanceTime'],
-                        'type': 'primary',
-                        'hollow': True,
-                    })
+                # 至结算日新增逾期利息
+                mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount, finalOverdueTime, overdueRate, waitRateAmount)
+                newOverduRateAmount = loanAmount * finalOverdueTime * overdueRate / 360
+                activities.append({
+                    'content': "至结算日新增逾期利息:%.2f=%s。" % (newOverduRateAmount, mathRecord),
+                    'timestamp': data['LXAction']['LXLoan']['balanceTime'],
+                    'type': 'primary',
+                    'hollow': True,
+                })
 
-                    # 至结算日待还利息和
-                    mathRecord = "(%.2f + %.2f + %.2f(剩余利息)" % (newRateAmount,newOverduRateAmount,waitRateAmount)
-                    waitRateAmount = newRateAmount +newOverduRateAmount +waitRateAmount
-                    activities.append({
-                        'content': "待还利息和:%.2f=%s。" % (waitRateAmount, mathRecord),
-                        'timestamp': data['LXAction']['LXLoan']['balanceTime'],
-                        'type': 'primary',
-                        'hollow': True,
-                    })
+                # 至结算日待还利息和
+                mathRecord = "(%.2f + %.2f + %.2f(剩余利息)" % (newRateAmount, newOverduRateAmount, waitRateAmount)
+                waitRateAmount = newRateAmount + newOverduRateAmount + waitRateAmount
+                activities.append({
+                    'content': "待还利息和:%.2f=%s。" % (waitRateAmount, mathRecord),
+                    'timestamp': data['LXAction']['LXLoan']['balanceTime'],
+                    'type': 'primary',
+                    'hollow': True,
+                })
             else:
                 # 至结算日剩余利息加总
                 finalTimeRange = float((balanceTime - lastRepayTime).days)
-                mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount,finalTimeRange,overdueRate,waitRateAmount)
+                mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount,finalTimeRange,rate,waitRateAmount)
                 waitRateAmount += loanAmount*finalTimeRange*rate/360
                 activities.append({
                     'content': "至结算日待还利息和:%.2f=%s。" % (waitRateAmount, mathRecord),
