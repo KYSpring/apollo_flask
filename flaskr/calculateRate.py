@@ -122,7 +122,8 @@ def calculate_rate():
 
         # 处理每次还款
         for i in range(len(LXRepayment)):
-
+            if LXRepayment[i]['repayPrincipal'] == 0 and LXRepayment[i]['repayRate'] == 0 and LXRepayment[i]['repayTotal'] == 0:
+                continue
             #当期期内利率计算时间
             if data['LXAction']['LXLoan']['rateRadio'] == 0 or \
                     data['LXAction']['LXLoan']['rateRadio'] == '0' or \
@@ -250,7 +251,7 @@ def calculate_rate():
                 finalOverdueTime = float((balanceTime - loanEndTime).days)
                 if finalOverdueTime > 0:
                     # 至结算日新增期内利息
-                    finalRateTime = max(float(loanEndTime - lastRepayTime), 0)
+                    finalRateTime = max(float((loanEndTime - lastRepayTime).days), 0)
                     mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount, finalRateTime, rate, waitRateAmount)
                     newRateAmount = loanAmount * finalRateTime * rate / 360
                     activities.append({
