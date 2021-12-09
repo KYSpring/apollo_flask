@@ -251,7 +251,7 @@ def calculate_rate():
                 finalOverdueTime = max(float((balanceTime - loanEndTime).days),0)
                 # 至结算日新增期内利息
                 finalRateTime = max(float((loanEndTime - lastRepayTime).days), 0)
-                mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount, finalRateTime, rate, waitRateAmount)
+                mathRecord = "(%.2f*%.d*%.4f/360)" % (loanAmount, finalRateTime, rate,)
                 newRateAmount = loanAmount * finalRateTime * rate / 360
                 activities.append({
                     'content': "至结算日新增期内利息:%.2f=%s。" % (newRateAmount, mathRecord),
@@ -261,7 +261,7 @@ def calculate_rate():
                 })
 
                 # 至结算日新增逾期利息
-                mathRecord = "(%.2f*%.d*%.4f/360)+%.2f(剩余利息)" % (loanAmount, finalOverdueTime, overdueRate, waitRateAmount)
+                mathRecord = "(%.2f*%.d*%.4f/360)" % (loanAmount, finalOverdueTime, overdueRate)
                 newOverduRateAmount = loanAmount * finalOverdueTime * overdueRate / 360
                 activities.append({
                     'content': "至结算日新增逾期利息:%.2f=%s。" % (newOverduRateAmount, mathRecord),

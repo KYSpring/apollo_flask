@@ -14,9 +14,10 @@ bp = Blueprint('dataQuery', __name__, url_prefix='/privatelending')
 
 class PrivateLendingRules():
     table_header = ["争议一级", "争议二级", "争议焦点", "裁判观点", "裁判依据", "说理", "判例"]
-    data_filepath = './data/' # flask运行时候的根目录和单独运行本py文件的根目录是不一样的
-    src_excel_filename = "裁判规则库20211026争议焦点体系终.xls"
-    dst_csv_filename = "裁判规则库20211026争议焦点体系终.csv"
+    data_filepath = './data/' # flask运行
+    # data_filepath = '../data/' # 单独运行
+    src_excel_filename = "1026 争议焦点体系 终.xls"
+    dst_csv_filename = "1026 争议焦点体系 终.csv"
 
     csv_data = ""
 
@@ -26,8 +27,9 @@ class PrivateLendingRules():
         if not os.path.exists(self.data_filepath + self.dst_csv_filename):                    # 没有CSV文件
             if os.path.exists(self.src_excel_filename):
                 self.wash_data(self.src_excel_filename)
+                print('wash1')
             elif os.path.exists(self.data_filepath + self.src_excel_filename):
-                print('bad')
+                print('wash2')
                 self.wash_data(self.data_filepath + self.src_excel_filename)
             else:
                 print("error: 找不到文件 " + self.src_excel_filename)
@@ -46,15 +48,16 @@ class PrivateLendingRules():
             sheet = workbook.sheet_by_name('Sheet1')
             row_num = sheet.nrows
             col_mum = sheet.ncols
-            merge_cells = sheet.merged_cells                            # 返回合并单元格列表 （起始行，结束行，起始列，结束列）  不包含
+            merge_cells = sheet.merged_cells                            # 返回合并单元格列表 （起始行，结束行，起始列，结束列）
 
             title_rows_index_list = [] # 一级标签记录行号即可
-            second_label_index_list = [] #二级标签记录行号范围
+            second_label_index_list = [] #二级标签记录行号范围 一个坑：二级标签可能不是Merge_cells
             for merge_cell in merge_cells:
                 if merge_cell[1]-merge_cell[0]==1 and merge_cell[3]-merge_cell[2]>3:
                     title_rows_index_list.append(merge_cell[0])             # 规则库.xls 都是单行合并，合并单元格行号即标题所在行
                 elif merge_cell[2]==0:
                     second_label_index_list.append([merge_cell[0],merge_cell[1]])
+
             title_rows_index_list.sort()                                # 行号从小到大排序
             second_label_index_list.sort()
             print('一级',title_rows_index_list)
@@ -68,7 +71,11 @@ class PrivateLendingRules():
                 else:
                     if row_index >= second_label_index_list[second_point][1]:
                         second_point = second_point+1
-                    second_label = sheet.cell_value(second_label_index_list[second_point][0],0);
+                        # 针对2级可能不是merged_cell的情况
+                    if row_index>=second_label_index_list[second_point][0] and row_index<=second_label_index_list[second_point][1]:
+                        second_label = sheet.cell_value(second_label_index_list[second_point][0],0);
+                    else:
+                        second_label = sheet.cell_value(row_index, 0);
                     # print(second_label,row_index, second_label_index_list[second_point][1])
                     with open(dst_csv_filepath, mode='a', newline='', encoding='utf-8-sig') as csv_f:
                         csv_writer = csv.writer(csv_f)
